@@ -74,6 +74,9 @@ const MainScreen = ({ navigation }) => {
             </TouchableOpacity>
           )}
         />
+        <TouchableOpacity onPress={() => navigation.navigate("NewRecipe")}>
+          <Text style={styles.receita}>Adicionar receita</Text>
+        </TouchableOpacity>
       </SafeAreaView>
     </>
   );

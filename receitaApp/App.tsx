@@ -3,6 +3,7 @@ import { createStackNavigator } from "@react-navigation/stack";
 import { NavigationContainer } from "@react-navigation/native";
 import MainScreen from "./src/pages/mainScreen";
 import Details from "./src/pages/details";
+import NewRecipe from "./src/pages/newRecipe";
 
 const Stack = createStackNavigator();
 
@@ -16,6 +17,7 @@ const App = () => {
           options={{ headerShown: false }}
         />
         <Stack.Screen name="Details" component={Details} />
+        <Stack.Screen name="NewRecipe" component={NewRecipe} />
       </Stack.Navigator>
     </NavigationContainer>
   );
