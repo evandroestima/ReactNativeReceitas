@@ -16,8 +16,16 @@ const App = () => {
           component={MainScreen}
           options={{ headerShown: false }}
         />
-        <Stack.Screen name="Details" component={Details} />
-        <Stack.Screen name="NewRecipe" component={NewRecipe} />
+        <Stack.Screen
+          name="Details"
+          component={Details}
+          options={{ headerShown: false }}
+        />
+        <Stack.Screen
+          name="NewRecipe"
+          component={NewRecipe}
+          options={{ headerShown: false }}
+        />
       </Stack.Navigator>
     </NavigationContainer>
   );

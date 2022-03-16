@@ -6,78 +6,108 @@ import {
   Text,
   TouchableOpacity,
   TextInput,
+  ImageBackground,
 } from "react-native";
+import AsyncStorage from "@react-native-async-storage/async-storage";
+import Icon from "react-native-vector-icons/Feather";
 
-const receitas = [
-  {
-    id: 1,
-    nome: "Bolo de cenoura",
-    ingredientes: [
-      "1 cenoura",
-      "1 copo de leite",
-      "1 copo de açúcar",
-      "1 copo de manteiga",
-      "1 copo de farinha de trigo",
-    ],
-    modoPreparo: [
-      "1. Cozinhe a cenoura em água e sal",
-      "2. Em uma panela, coloque o leite, o açúcar, a manteiga e a farinha de trigo",
-      "3. Mexa bem até ficar uma mistura homogênea",
-      "4. Junte o leite, o açúcar, a manteiga e a farinha de trigo",
-      "5. Mexa bem até ficar uma mistura homogênea",
-      "6. Coloque em uma forma de bolo e leve ao forno pré-aquecido a 180°C por aproximadamente 30 minutos",
-    ],
-    imagem:
-      "https://s2.glbimg.com/vGqO-xbCN2RQQO13DP1Z9-pV0N4=/0x0:1280x800/984x0/smart/filters:strip_icc()/i.s3.glbimg.com/v1/AUTH_1f540e0b94d8437dbbc39d567a1dee68/internal_photos/bs/2021/9/N/bmnJNgR5G0K2QmEYFkPQ/bolo-de-cenoura-receita.jpg",
-  },
-  {
-    id: 2,
-    nome: "Bolo de chocolate",
-    ingredientes: [
-      "1 copo de leite",
-      "1 copo de açúcar",
-      "1 copo de manteiga",
-      "1 copo de farinha de trigo",
-      "1 copo de chocolate em pó",
-    ],
-    modoPreparo: [
-      "1. chocolatewww",
-      "2. Em uma panela, coloque o leite, o açúcar, a manteiga e a farinha de trigo",
-      "3. Mexa bem até ficar uma mistura homogênea",
-      "4. Junte o leite, o açúcar, a manteiga e a farinha de trigo",
-      "5. Mexa bem até ficar uma mistura homogênea",
-      "6. Coloque em uma forma de bolo e leve ao forno pré-aquecido a 180°C por aproximadamente 30 minutos",
-    ],
-    imagem:
-      "https://img.itdg.com.br/tdg/images/recipes/000/000/818/818/818/818/818.jpg?mode=crop&width=710&height=400",
-  },
-];
+type FormData = {
+  nome: string;
+  tempoPreparo: string;
+};
 
-const MainScreen = ({ navigation }) => {
+const MainScreen = ({ navigation }: any) => {
+  const [receitas, setReceitas] = useState([]);
+  const [receitasTemp, setReceitasTemp] = useState([]);
+
+  const getReceitas = async () => {
+    await AsyncStorage.getAllKeys().then((keys) =>
+      keys.map((key) =>
+        AsyncStorage.getItem(key).then((value) => {
+          setReceitas((prev) => [...prev, JSON.parse(value)]);
+          setReceitasTemp((prev) => [...prev, JSON.parse(value)]);
+          return value || "{}";
+        })
+      )
+    );
+  };
+
+  useEffect(() => {
+    setReceitas([]);
+    setReceitasTemp([]);
+    getReceitas();
+    if (receitas.length !== 0) {
+      const willFocusSubscription = navigation.addListener("focus", () => {
+        setReceitas([]);
+        setReceitasTemp([]);
+        getReceitas();
+        return willFocusSubscription;
+      });
+    }
+  }, []);
+
+  const findSimilarInArray = (array: any, value: string) => {
+    let temp: any = [];
+    if (value === "") {
+      setReceitas(receitasTemp);
+    } else {
+      array.forEach((element) => {
+        if (element.nome.toLowerCase().includes(value.toLowerCase())) {
+          temp.push(element);
+        }
+      });
+      setReceitas(temp);
+    }
+  };
+
   return (
     <>
-      <SafeAreaView style={styles.container}>
-        <Text style={styles.title}>Busque sua receita</Text>
-        <TextInput
-          style={styles.input}
-          placeholder="Digite o nome do da receita"
-        />
-        <FlatList
-          data={receitas}
-          keyExtractor={(receita) => receita.id.toString()}
-          renderItem={({ item }) => (
-            <TouchableOpacity
-              onPress={() => navigation.navigate("Details", { receita: item })}
-              style={styles.receita}
-            >
-              <Text>{item.nome}</Text>
-            </TouchableOpacity>
-          )}
-        />
-        <TouchableOpacity onPress={() => navigation.navigate("NewRecipe")}>
-          <Text style={styles.receita}>Adicionar receita</Text>
-        </TouchableOpacity>
-      </SafeAreaView>
+      <ImageBackground
+        source={require("../../assets/mainbackground.jpg")}
+        style={styles.backgroundImage}
+      >
+        <SafeAreaView style={styles.container}>
+          <Text style={styles.title}>Busque sua receita</Text>
+          <TextInput
+            style={styles.input}
+            placeholder="Digite o nome do da receita"
+            onChange={(e) => {
+              const similarReceitas = findSimilarInArray(
+                receitas,
+                e.nativeEvent.text
+              );
+            }}
+          />
+          {receitas !== [] ? (
+            <FlatList
+              data={receitas}
+              renderItem={({ item }) => (
+                <TouchableOpacity
+                  onPress={() =>
+                    navigation.navigate("Details", { receita: item })
+                  }
+                  style={styles.receita}
+                >
+                  <SafeAreaView style={styles.insideList}>
+                    <Icon name="clock" size={30} />
+                    <Text style={styles.tempoPreparoStyle}>
+                      {item.tempoPreparo} minutos
+                    </Text>
+                  </SafeAreaView>
+                  <Text style={styles.nomeItemStyle}>{item.nome}</Text>
+                </TouchableOpacity>
+              )}
+            />
+          ) : null}
+
+          <TouchableOpacity
+            style={styles.addRecipe}
+            onPress={() => navigation.navigate("NewRecipe")}
+          >
+            <Text style={styles.addRecipeText}>Adicionar receita</Text>
+          </TouchableOpacity>
+        </SafeAreaView>
+      </ImageBackground>
     </>
   );
 };
@@ -85,21 +115,21 @@ const MainScreen = ({ navigation }) => {
 const styles = StyleSheet.create({
   container: {
     flex: 1,
-    backgroundColor: "#b85e5e",
     alignItems: "center",
     justifyContent: "center",
   },
   receita: {
-    backgroundColor: "#fff",
-    padding: 20,
-    margin: 10,
+    backgroundColor: "#ccbee0",
+    padding: 10,
     borderRadius: 4,
     borderWidth: 1,
     borderColor: "#ddd",
+    marginBottom: 10,
+    minWidth: "100%",
   },
   title: {
     fontSize: 30,
-    color: "#fff",
+    color: "#37166b",
     fontWeight: "bold",
     marginBottom: 20,
   },
@@ -112,6 +142,36 @@ const styles = StyleSheet.create({
     padding: 10,
     width: "80%",
     backgroundColor: "#fff",
+  },
+  insideList: {
+    flexDirection: "row",
+    alignItems: "center",
+  },
+  tempoPreparoStyle: {
+    fontSize: 20,
+    color: "#402ea8",
+    marginLeft: 10,
+  },
+  nomeItemStyle: {
+    fontSize: 15,
+    color: "#000",
+  },
+  addRecipe: {
+    backgroundColor: "#ccbee0",
+    padding: 10,
+    borderRadius: 4,
+    borderWidth: 1,
+    borderColor: "#ddd",
+    margin: 20,
+  },
+  addRecipeText: {
+    fontSize: 20,
+    color: "#402ea8",
+  },
+  backgroundImage: {
+    flex: 1,
+    resizeMode: "cover",
+    justifyContent: "center",
   },
 });
 
