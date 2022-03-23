@@ -53,6 +53,7 @@ const NewRecipe = ({ navigation }) => {
     toggleIngredientesHandler();
     toggleModoPreparoHandler();
     Alert.alert("Receita salva com sucesso!");
+    navigation.navigate("MainScreen");
   };
 
   function clearLocalStorage() {

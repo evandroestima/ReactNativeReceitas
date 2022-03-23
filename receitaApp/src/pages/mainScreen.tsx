@@ -7,9 +7,11 @@ import {
   TouchableOpacity,
   TextInput,
   ImageBackground,
+  RefreshControl,
 } from "react-native";
 import AsyncStorage from "@react-native-async-storage/async-storage";
 import Icon from "react-native-vector-icons/Feather";
+import { ScrollView } from "react-native-gesture-handler";
 
 type FormData = {
   nome: string;
@@ -19,6 +21,7 @@ type FormData = {
 const MainScreen = ({ navigation }: any) => {
   const [receitas, setReceitas] = useState([]);
   const [receitasTemp, setReceitasTemp] = useState([]);
+  const [refreshing, setRefreshing] = React.useState(false);
 
   const getReceitas = async () => {
     await AsyncStorage.getAllKeys().then((keys) =>
@@ -32,18 +35,31 @@ const MainScreen = ({ navigation }: any) => {
     );
   };
 
+  const wait = (timeout: any) => {
+    return new Promise((resolve) => setTimeout(resolve, timeout));
+  };
+  const onRefresh = React.useCallback(() => {
+    setRefreshing(true);
+    wait(2000).then(() => {
+      setReceitas([]);
+      setReceitasTemp([]);
+      getReceitas();
+      setRefreshing(false);
+    });
+  }, []);
+
   useEffect(() => {
     setReceitas([]);
     setReceitasTemp([]);
     getReceitas();
-    if (receitas.length !== 0) {
-      const willFocusSubscription = navigation.addListener("focus", () => {
-        setReceitas([]);
-        setReceitasTemp([]);
-        getReceitas();
-        return willFocusSubscription;
-      });
-    }
+    // if (receitas.length !== 0) {
+    //   const willFocusSubscription = navigation.addListener("focus", () => {
+    //     setReceitas([]);
+    //     setReceitasTemp([]);
+    //     getReceitas();
+    //     return willFocusSubscription;
+    //   });
+    // }
   }, []);
 
   const findSimilarInArray = (array: any, value: string) => {
@@ -81,6 +97,9 @@ const MainScreen = ({ navigation }: any) => {
           {receitas !== [] ? (
             <FlatList
               data={receitas}
+              refreshControl={
+                <RefreshControl refreshing={refreshing} onRefresh={onRefresh} />
+              }
               renderItem={({ item }) => (
                 <TouchableOpacity
                   onPress={() =>

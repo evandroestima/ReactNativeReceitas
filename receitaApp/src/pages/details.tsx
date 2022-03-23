@@ -5,13 +5,25 @@ import {
   Text,
   Image,
   ImageBackground,
+  Alert,
 } from "react-native";
 import { ScrollView, TouchableOpacity } from "react-native-gesture-handler";
 import Icon from "react-native-vector-icons/Feather";
+import AsyncStorage from "@react-native-async-storage/async-storage";
 
 const Details = (receita: any) => {
   const { nome, ingredientes, modoPreparo, imagem } =
     receita.route.params.receita;
+
+  const deleteRecipe = async () => {
+    await AsyncStorage.removeItem("@Receitas:" + nome);
+    await AsyncStorage.getAllKeys().then((keys) =>
+      keys.map((key) => console.log(key))
+    );
+    Alert.alert("Receita removida com sucesso!");
+    receita.navigation.navigate("MainScreen");
+  };
+
   return (
     <>
       <ImageBackground
@@ -20,7 +32,13 @@ const Details = (receita: any) => {
       >
         <ScrollView>
           <SafeAreaView style={styles.container}>
-            <Image style={styles.imagem} source={{ uri: imagem }} />
+            <TouchableOpacity
+              onPress={() => deleteRecipe()}
+              style={styles.deleteButton}
+            >
+              <Icon name="trash-2" size={30} color="#543685" />
+              <Text style={styles.title}>Apagar receita</Text>
+            </TouchableOpacity>
             <SafeAreaView style={styles.card}>
               <Text style={styles.title}>{nome}</Text>
               <Text style={styles.ingredientes}>
@@ -97,6 +115,20 @@ const styles = StyleSheet.create({
     paddingBottom: 10,
     margin: 10,
     marginTop: 60,
+    borderRadius: 4,
+    borderWidth: 1,
+    borderColor: "#ddd",
+    alignItems: "center",
+  },
+  deleteButton: {
+    backgroundColor: "#c6a1ff",
+    display: "flex",
+    flexDirection: "row",
+    paddingRight: 20,
+    paddingLeft: 20,
+    paddingTop: 10,
+    paddingBottom: 10,
+    margin: 10,
     borderRadius: 4,
     borderWidth: 1,
     borderColor: "#ddd",
