@@ -6,7 +6,7 @@ import {
   Image,
   ImageBackground,
 } from "react-native";
-import { TouchableOpacity } from "react-native-gesture-handler";
+import { ScrollView, TouchableOpacity } from "react-native-gesture-handler";
 import Icon from "react-native-vector-icons/Feather";
 
 const Details = (receita: any) => {
@@ -18,32 +18,34 @@ const Details = (receita: any) => {
         source={require("../../assets/detailsbackground.jpg")}
         style={styles.backgroundImage}
       >
-        <SafeAreaView style={styles.container}>
-          <Image style={styles.imagem} source={{ uri: imagem }} />
-          <SafeAreaView style={styles.card}>
-            <Text style={styles.title}>{nome}</Text>
-            <Text style={styles.ingredientes}>
-              {ingredientes.map((ingrediente: any, index: number) => {
-                return index + 1 + ". " + ingrediente + "\n";
-              })}
-            </Text>
-            <Text style={styles.title}>Modo de Preparo</Text>
-            <Text style={styles.ingredientes}>
-              {modoPreparo.map((modo: any, index: number) => {
-                return index + 1 + ". " + modo + "\n";
-              })}
-            </Text>
+        <ScrollView>
+          <SafeAreaView style={styles.container}>
+            <Image style={styles.imagem} source={{ uri: imagem }} />
+            <SafeAreaView style={styles.card}>
+              <Text style={styles.title}>{nome}</Text>
+              <Text style={styles.ingredientes}>
+                {ingredientes.map((ingrediente: any, index: number) => {
+                  return index + 1 + ". " + ingrediente + "\n";
+                })}
+              </Text>
+              <Text style={styles.title}>Modo de Preparo</Text>
+              <Text style={styles.ingredientes}>
+                {modoPreparo.map((modo: any, index: number) => {
+                  return index + 1 + ". " + modo + "\n";
+                })}
+              </Text>
+            </SafeAreaView>
+            <TouchableOpacity
+              style={styles.back}
+              onPress={() => {
+                receita.navigation.goBack();
+              }}
+            >
+              <Icon name="arrow-left" size={30} color="#543685" />
+              <Text style={styles.title}>Voltar</Text>
+            </TouchableOpacity>
           </SafeAreaView>
-          <TouchableOpacity
-            style={styles.back}
-            onPress={() => {
-              receita.navigation.goBack();
-            }}
-          >
-            <Icon name="arrow-left" size={30} color="#543685" />
-            <Text style={styles.title}>Voltar</Text>
-          </TouchableOpacity>
-        </SafeAreaView>
+        </ScrollView>
       </ImageBackground>
     </>
   );

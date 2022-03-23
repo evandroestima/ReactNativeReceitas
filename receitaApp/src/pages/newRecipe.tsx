@@ -14,10 +14,11 @@ import {
 import AsyncStorage from "@react-native-async-storage/async-storage";
 import { useForm, Controller } from "react-hook-form";
 import Icon from "react-native-vector-icons/Feather";
+import { ScrollView } from "react-native-gesture-handler";
 
 type FormData = {
   nome: string;
-  tempoPreparo: string;
+  tempoPreparo: Number;
   ingredientes: string[];
   modoPreparo: string[];
 };
@@ -37,7 +38,7 @@ const NewRecipe = ({ navigation }) => {
       nome: "",
       ingredientes: ingredientes,
       modoPreparo: modoPreparo,
-      tempoPreparo: "",
+      tempoPreparo: 0,
     },
   });
 
@@ -106,157 +107,159 @@ const NewRecipe = ({ navigation }) => {
         source={require("../../assets/newrecipebackground.jpg")}
         style={styles.backgroundImage}
       >
-        <SafeAreaView style={styles.container}>
-          <TouchableOpacity
-            onPress={() => {
-              navigation.navigate("MainScreen");
-            }}
-            style={styles.buttonVoltar}
-          >
-            <Icon name="arrow-left" size={28} color="#543685" />
-            <Text style={styles.texto}>Voltar</Text>
-          </TouchableOpacity>
-          <Text style={styles.title}>Nova Receita</Text>
-          <Controller
-            control={control}
-            rules={{
-              required: true,
-            }}
-            render={({ field: { onChange, value } }) => (
-              <TextInput
-                style={styles.input}
-                onChangeText={onChange}
-                placeholder="Nome da Receita"
-                value={value}
-              />
-            )}
-            name="nome"
-          />
-          {errors.nome && (
-            <Text style={styles.errorWarning}>Campo obrigatório</Text>
-          )}
-
-          <Controller
-            control={control}
-            rules={{
-              required: true,
-            }}
-            render={({ field: { onChange, value } }) => (
-              <TextInput
-                style={styles.input}
-                onChangeText={onChange}
-                placeholder="Tempo de preparo (em minutos)"
-                value={value}
-              />
-            )}
-            name="tempoPreparo"
-          />
-          {errors.tempoPreparo && (
-            <Text style={styles.errorWarning}>Campo obrigatório</Text>
-          )}
-
-          {/* INGREDIENTES */}
-          <TouchableOpacity
-            style={styles.listButtonStyle}
-            onPress={toggleIngredientesHandler}
-          >
-            <Text style={styles.texto}> Ingredientes </Text>
-          </TouchableOpacity>
-          <SafeAreaView>
-            {toggleIngredientes ? (
-              <SafeAreaView style={styles.listContainer}>
-                <TouchableOpacity
-                  style={styles.addButton}
-                  onPress={() =>
-                    removeIngredienteHandler(ingredientes.length - 1)
-                  }
-                >
-                  <Text style={styles.texto}>-</Text>
-                </TouchableOpacity>
-                <FlatList
-                  data={ingredientes}
-                  renderItem={({ item, index }) => (
-                    <TextInput
-                      style={styles.inputLista}
-                      placeholder={"Ingrediente " + (index + 1)}
-                      onChangeText={(value) =>
-                        setIngredientes([
-                          ...ingredientes.slice(0, index),
-                          value,
-                          ...ingredientes.slice(index + 1),
-                        ])
-                      }
-                    >
-                      {item ? item : null}
-                    </TextInput>
-                  )}
-                  keyExtractor={(item, index) => index.toString()}
+        <ScrollView>
+          <SafeAreaView style={styles.container}>
+            <TouchableOpacity
+              onPress={() => {
+                navigation.navigate("MainScreen");
+              }}
+              style={styles.buttonVoltar}
+            >
+              <Icon name="arrow-left" size={28} color="#543685" />
+              <Text style={styles.texto}>Voltar</Text>
+            </TouchableOpacity>
+            <Text style={styles.title}>Nova Receita</Text>
+            <Controller
+              control={control}
+              rules={{
+                required: true,
+              }}
+              render={({ field: { onChange, value } }) => (
+                <TextInput
+                  style={styles.input}
+                  onChangeText={onChange}
+                  placeholder="Nome da Receita"
+                  value={value}
                 />
-                <TouchableOpacity
-                  style={styles.addButton}
-                  onPress={() => addIngredienteHandler("")}
-                >
-                  <Text style={styles.texto}>+</Text>
-                </TouchableOpacity>
-              </SafeAreaView>
-            ) : null}
-          </SafeAreaView>
+              )}
+              name="nome"
+            />
+            {errors.nome && (
+              <Text style={styles.errorWarning}>Campo obrigatório</Text>
+            )}
 
-          {/* MODO DE PREPARO */}
-
-          <TouchableOpacity
-            style={styles.listButtonStyle}
-            onPress={toggleModoPreparoHandler}
-          >
-            <Text style={styles.texto}> Modo de preparo </Text>
-          </TouchableOpacity>
-          <SafeAreaView>
-            {toggleModoPreparo ? (
-              <SafeAreaView style={styles.listContainer}>
-                <TouchableOpacity
-                  style={styles.addButton}
-                  onPress={() =>
-                    removeModoPreparoHandler(modoPreparo.length - 1)
-                  }
-                >
-                  <Text style={styles.texto}>-</Text>
-                </TouchableOpacity>
-                <FlatList
-                  data={modoPreparo}
-                  renderItem={({ item, index }) => (
-                    <TextInput
-                      style={styles.inputLista}
-                      placeholder={"Passo " + (index + 1)}
-                      onChangeText={(value) =>
-                        setModoPreparo([
-                          ...modoPreparo.slice(0, index),
-                          value,
-                          ...modoPreparo.slice(index + 1),
-                        ])
-                      }
-                    >
-                      {item ? item : null}
-                    </TextInput>
-                  )}
-                  keyExtractor={(item, index) => index.toString()}
+            <Controller
+              control={control}
+              rules={{
+                required: true,
+              }}
+              render={({ field: { onChange, value } }) => (
+                <TextInput
+                  style={styles.input}
+                  onChangeText={onChange}
+                  placeholder="Tempo de preparo (em minutos)"
+                  value={value}
                 />
-                <TouchableOpacity
-                  style={styles.addButton}
-                  onPress={() => addModoPreparoHandler("")}
-                >
-                  <Text style={styles.texto}>+</Text>
-                </TouchableOpacity>
-              </SafeAreaView>
-            ) : null}
-          </SafeAreaView>
+              )}
+              name="tempoPreparo"
+            />
+            {errors.tempoPreparo && (
+              <Text style={styles.errorWarning}>Campo obrigatório</Text>
+            )}
 
-          <TouchableOpacity
-            style={styles.button}
-            onPress={handleSubmit(onSubmit)}
-          >
-            <Text style={styles.texto}>Salvar</Text>
-          </TouchableOpacity>
-        </SafeAreaView>
+            {/* INGREDIENTES */}
+            <TouchableOpacity
+              style={styles.listButtonStyle}
+              onPress={toggleIngredientesHandler}
+            >
+              <Text style={styles.texto}> Ingredientes </Text>
+            </TouchableOpacity>
+            <SafeAreaView>
+              {toggleIngredientes ? (
+                <SafeAreaView style={styles.listContainer}>
+                  <TouchableOpacity
+                    style={styles.addButton}
+                    onPress={() =>
+                      removeIngredienteHandler(ingredientes.length - 1)
+                    }
+                  >
+                    <Text style={styles.texto}>-</Text>
+                  </TouchableOpacity>
+                  <FlatList
+                    data={ingredientes}
+                    renderItem={({ item, index }) => (
+                      <TextInput
+                        style={styles.inputLista}
+                        placeholder={"Ingrediente " + (index + 1)}
+                        onChangeText={(value) =>
+                          setIngredientes([
+                            ...ingredientes.slice(0, index),
+                            value,
+                            ...ingredientes.slice(index + 1),
+                          ])
+                        }
+                      >
+                        {item ? item : null}
+                      </TextInput>
+                    )}
+                    keyExtractor={(item, index) => index.toString()}
+                  />
+                  <TouchableOpacity
+                    style={styles.addButton}
+                    onPress={() => addIngredienteHandler("")}
+                  >
+                    <Text style={styles.texto}>+</Text>
+                  </TouchableOpacity>
+                </SafeAreaView>
+              ) : null}
+            </SafeAreaView>
+
+            {/* MODO DE PREPARO */}
+
+            <TouchableOpacity
+              style={styles.listButtonStyle}
+              onPress={toggleModoPreparoHandler}
+            >
+              <Text style={styles.texto}> Modo de preparo </Text>
+            </TouchableOpacity>
+            <SafeAreaView>
+              {toggleModoPreparo ? (
+                <SafeAreaView style={styles.listContainer}>
+                  <TouchableOpacity
+                    style={styles.addButton}
+                    onPress={() =>
+                      removeModoPreparoHandler(modoPreparo.length - 1)
+                    }
+                  >
+                    <Text style={styles.texto}>-</Text>
+                  </TouchableOpacity>
+                  <FlatList
+                    data={modoPreparo}
+                    renderItem={({ item, index }) => (
+                      <TextInput
+                        style={styles.inputLista}
+                        placeholder={"Passo " + (index + 1)}
+                        onChangeText={(value) =>
+                          setModoPreparo([
+                            ...modoPreparo.slice(0, index),
+                            value,
+                            ...modoPreparo.slice(index + 1),
+                          ])
+                        }
+                      >
+                        {item ? item : null}
+                      </TextInput>
+                    )}
+                    keyExtractor={(item, index) => index.toString()}
+                  />
+                  <TouchableOpacity
+                    style={styles.addButton}
+                    onPress={() => addModoPreparoHandler("")}
+                  >
+                    <Text style={styles.texto}>+</Text>
+                  </TouchableOpacity>
+                </SafeAreaView>
+              ) : null}
+            </SafeAreaView>
+
+            <TouchableOpacity
+              style={styles.button}
+              onPress={handleSubmit(onSubmit)}
+            >
+              <Text style={styles.texto}>Salvar</Text>
+            </TouchableOpacity>
+          </SafeAreaView>
+        </ScrollView>
       </ImageBackground>
     </>
   );
